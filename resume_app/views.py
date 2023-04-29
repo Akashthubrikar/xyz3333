@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from .models import Candidate
 from .serializers import CandidateSerializer
+from rest_framework import status
 
 
 
@@ -18,26 +19,27 @@ def candidate_list(request):
 
         candidates = Candidate.objects.all()
         if city:
-            candidates = candidates.filter(city=city)
+            candidates = candidates.filter(city=city) #set queeryset to fetch city filter
         if tech_skills:
-            candidates = candidates.filter(tech_skills__icontains=tech_skills)
+            candidates = candidates.filter(tech_skills__icontains=tech_skills) #set querryset to fetch tech_skill filter
         else:
-            candidates = Candidate.objects.all()[0:50]
+            candidates = Candidate.objects.all()[0:50] #set querryset to fetch 50 records
         result_page = paginator.paginate_queryset(candidates, request)
         serializer = CandidateSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
         # Check if request is a POST request
     if request.method == 'POST':
         # Check if data is valid
+        
         data = request.data
         if not data:
-            return Response({'error': 'No data provided'})
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         # If single record, create and save
         if isinstance(data, dict):
             candidate = Candidate(**data)
             candidate.save()
-            return Response({'success': 'Candidate record created'})
+            return Response(status=status.HTTP_201_CREATED)
         
         # If multiple records, create and save each one
         if isinstance(data, list):
@@ -48,4 +50,4 @@ def candidate_list(request):
             Candidate.objects.bulk_create(candidates)
             return Response({'success': f'{len(candidates)} candidate records created'})
     
-    return Response({'error': 'Invalid request method'})
+    return Response(status=status.HTTP_400_BAD_REQUEST)
