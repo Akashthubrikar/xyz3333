@@ -6,6 +6,9 @@ from rest_framework.pagination import PageNumberPagination
 from .models import Candidate
 from .serializers import CandidateSerializer
 from rest_framework import status
+from django.http import JsonResponse,HttpResponse
+from django.template import loader
+import pdfkit
 
 
 
@@ -51,3 +54,15 @@ def candidate_list(request):
             return Response({'success': f'{len(candidates)} candidate records created'})
     
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def web_view(request,id):
+    try:
+     tag= Candidate.objects.get(pk=id)
+
+    except Candidate.DoesNotExist:
+        return Response(status==status.HTTP_404_NOT_FOUND)
+   
+    pdf_file=loader.get_template("app.html") 
+    html=pdf_file.render({'tag':tag})
+    return render(request,'app.html',{'tag':tag})
