@@ -63,6 +63,6 @@ def web_view(request,id):
     except Candidate.DoesNotExist:
         return Response(status==status.HTTP_404_NOT_FOUND)
    
-    pdf_file=loader.get_template("app.html") 
-    html=pdf_file.render({'tag':tag})
+    # pdf_file=loader.get_template("app.html") 
+    # html=pdf_file.render({'tag':tag})
     return render(request,'app.html',{'tag':tag})
