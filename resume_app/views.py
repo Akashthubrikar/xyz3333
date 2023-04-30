@@ -23,10 +23,8 @@ def candidate_list(request):
         candidates = Candidate.objects.all()
         if city:
             candidates = candidates.filter(city=city) #set queeryset to fetch city filter
-            result_page = paginator.paginate_queryset(candidates, request)
-            serializer = CandidateSerializer(result_page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-        if tech_skills:
+            
+        elif tech_skills:
             candidates = candidates.filter(tech_skills__icontains=tech_skills) #set querryset to fetch tech_skill filter
         else:
             candidates = Candidate.objects.all()[0:50] #set querryset to fetch 50 records
